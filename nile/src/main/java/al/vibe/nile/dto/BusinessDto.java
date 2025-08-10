@@ -1,4 +1,4 @@
-package al.vibe.nile.user.business.dto;
+package al.vibe.nile.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

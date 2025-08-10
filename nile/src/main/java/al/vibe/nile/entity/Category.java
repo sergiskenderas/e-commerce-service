@@ -1,4 +1,4 @@
-package al.vibe.nile.products.entity;
+package al.vibe.nile.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
