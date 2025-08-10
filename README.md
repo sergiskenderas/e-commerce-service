@@ -1,2 +1,2 @@
 # e-commerce-service
-E-Commerce, JavaTiranaAL-49
+E-commerce , JavaTirana-49
