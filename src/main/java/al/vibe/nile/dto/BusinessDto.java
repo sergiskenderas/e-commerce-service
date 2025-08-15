@@ -19,5 +19,7 @@ public class BusinessDto {
     private LocalDateTime createdAt;
     @JsonProperty("updated-at")
     private LocalDateTime updatedAt;
+
+
 }
 
