@@ -19,8 +19,6 @@ public class Payment {
     private LocalDateTime paymentDate;
     @Column(name = "amount", nullable = false)
     private String amount;
-
-
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = false)
     private PaymentMethod paymentMethod;
@@ -29,10 +27,9 @@ public class Payment {
     private PaymentStatus paymentStatus;
     @Column(name = "transaction_id", nullable = false, unique = true)
     private String transactionId;
-    @OneToOne
-    @JoinColumn(name = "order", nullable = false)
-    private Order order;
+
     @Timestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
 }
