@@ -1,18 +1,15 @@
 package al.vibe.nile.dto;
+import al.vibe.nile.entity.Product;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import al.vibe.nile.entity.Costumer;
 import al.vibe.nile.entity.OrderStatus;
 import al.vibe.nile.entity.Payment;
-import al.vibe.nile.entity.Product;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-
-import java.time.LocalDateTime;
 import java.util.List;
-
+import lombok.Data;
+import java.time.LocalDateTime;
 
 @Data
-public class OrderDto {
-    private Long id;
+public class CreateOrderDto {
     @JsonProperty("order_number")
     private String orderNumber;
     @JsonProperty("order_date")
@@ -25,8 +22,4 @@ public class OrderDto {
     private Payment paymentMethod;
     private List<Product> items;
     private Costumer costumer;
-    @JsonProperty("created_at")
-    private String createdAt;
-    @JsonProperty("updated_at")
-    private String updatedAt;
-    }
+}
