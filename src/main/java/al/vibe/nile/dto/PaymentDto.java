@@ -26,7 +26,11 @@ public class PaymentDto {
     @JsonProperty("transaction_id")
     private String transactionId;
 
+    @JsonProperty("created_at")
+    LocalDateTime createdAt;
+
     @JsonProperty("updated_at")
     private LocalDateTime updatedAt;
 
 }
+
