@@ -3,6 +3,7 @@ import al.vibe.nile.dto.CreateOrderDto;
 import al.vibe.nile.dto.OrderDto;
 import al.vibe.nile.entity.Order;
 import al.vibe.nile.service.OrderService;
+import al.vibe.nile.entity.OrderStatus;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,5 +56,17 @@ public class OrderController {
         log.warn("Deleting order with id: " + id);
         orderService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/costumer/{id}")
+    public ResponseEntity<List<Order>> getOrdersByCostumer(@PathVariable Long costumerId) {
+        return new ResponseEntity<>(orderService.findOrdersByCostumer(costumerId), HttpStatus.OK);
+    }
+    @GetMapping("/business/{id}")
+    public ResponseEntity<List<Order>> getOrdersByBusiness(@PathVariable Long businessId) {
+        return new ResponseEntity<>(orderService.findOrdersByBusiness(businessId), HttpStatus.OK);
+    }
+    @GetMapping("/{status}")
+    public ResponseEntity<List<Order>> getOrdersByOrderStatus (@PathVariable OrderStatus orderStatus) {
+        return new ResponseEntity<>(orderService.findOrdersByOrderStatus(orderStatus), HttpStatus.OK);
     }
 }
