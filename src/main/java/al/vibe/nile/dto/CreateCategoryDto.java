@@ -7,5 +7,4 @@ import lombok.Data;
 public class CreateCategoryDto {
     private String name;
     private String description;
-    private Product product;
 }
