@@ -4,8 +4,10 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jdk.jfr.Timestamp;
 import lombok.Data;
+import jakarta.persistence.FetchType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import jakarta.persistence.ManyToOne;
 
 import java.time.LocalDateTime;
 
@@ -26,7 +28,7 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus;
-    @Column(name = "transaction_id", nullable = false, unique = true)
+    @Column(name = "transaction_id", nullable = true, unique = false)
     private String transactionId;
 
     @CreationTimestamp
@@ -35,5 +37,8 @@ public class Payment {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "costumer_id")
+    private Costumer costumer;
 
 }

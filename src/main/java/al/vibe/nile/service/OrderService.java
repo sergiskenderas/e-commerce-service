@@ -1,13 +1,17 @@
 package al.vibe.nile.service;
-
 import al.vibe.nile.dto.CreateOrderDto;
 import al.vibe.nile.dto.CreateOrderItemDto;
-import al.vibe.nile.entity.*;
+import al.vibe.nile.entity.Business;
+import al.vibe.nile.entity.Costumer;
+import al.vibe.nile.entity.Order;
+import al.vibe.nile.entity.OrderItem;
+import al.vibe.nile.entity.OrderStatus;
+import al.vibe.nile.entity.Product;
+import al.vibe.nile.repository.CostumerRepository;
 import al.vibe.nile.repository.OrderItemRepository;
 import al.vibe.nile.repository.OrderRepository;
 import al.vibe.nile.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +31,6 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService {
     public static final Logger log = LoggerFactory.getLogger(OrderService.class);
-
     @Autowired
     private OrderRepository repository;
 
@@ -37,6 +39,9 @@ public class OrderService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CostumerRepository costumerRepository;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -52,23 +57,38 @@ public class OrderService {
                                 ("Order" + id + "not found"));
 
     }
-    public Order create(CreateOrderDto createOrderDto){
+    public Order create(CreateOrderDto createOrderDto) {
+        if (createOrderDto == null) {
+            throw new IllegalArgumentException("Order DTO cannot be null");
+        }
+
+        if (createOrderDto.getCostumerId() == null) {
+            throw new IllegalArgumentException("Customer ID cannot be null");
+        }
+
+        if (createOrderDto.getOrderItems() == null || createOrderDto.getOrderItems().isEmpty()) {
+            throw new IllegalArgumentException("Order items cannot be null or empty");
+        }
+
+        Costumer existingCustomer = costumerRepository.findById(createOrderDto.getCostumerId())
+                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + createOrderDto.getCostumerId()));
+
         Order order = new Order();
-        order.setCostumer(new Costumer(createOrderDto.getCostumerId()));
+        order.setCostumer(existingCustomer);
         order.setTotalAmount(0D);
         order.setOrderStatus(OrderStatus.PROCESSING);
+        order.setBusiness(new Business(1L));
+
         Order savedOrder = repository.save(order);
+
         Set<Long> ids = createOrderDto.getOrderItems().stream()
-                .map(orderItemDto -> orderItemDto.getProductId())
+                .map(CreateOrderItemDto::getProductId)
                 .collect(Collectors.toSet());
 
         List<Product> products = this.productRepository.findAllById(ids);
 
-        Map<Long, Double> priceMap = new HashMap<>();
-
-        products.stream().forEach(product -> {
-            priceMap.put(product.getId(), product.getPrice());
-        });
+        Map<Long, Double> priceMap = products.stream()
+                .collect(Collectors.toMap(Product::getId, Product::getPrice));
 
         Double total = 0D;
 
@@ -79,14 +99,13 @@ public class OrderService {
             orderItem.setSubTotal(orderItem.getPrice() * orderItemDto.getQuantity());
             orderItem.setQuantity(orderItemDto.getQuantity());
             orderItem.setOrder(savedOrder);
-            total+=orderItem.getSubTotal();
+            total += orderItem.getSubTotal();
             orderItemRepository.save(orderItem);
         }
+
         savedOrder.setTotalAmount(total);
         return repository.save(savedOrder);
-    }
-
-    public List<Order> getList(){
+    }    public List<Order> getList(){
         return(repository.findAll());
     }
 
@@ -131,7 +150,6 @@ public class OrderService {
         Costumer costumer = new Costumer();
         costumer.setId(costumerId);
         return repository.findOrdersByCostumer(costumer);
-
     }
     public Page<Order> findOrdersByBusiness(Long businessId, Integer size, Integer page, String sort, Sort.Direction direction){
         Business business = new Business();
@@ -140,7 +158,8 @@ public class OrderService {
         Pageable pageable = PageRequest.of(page, size, sortBy);
         return repository.findOrdersByBusiness(business, pageable);
     }
-    public Page<Order> findOrdersByOrderStatus(OrderStatus orderStatus, Integer size, Integer page, String sort, Sort.Direction direction){
+    public Page<Order> findOrdersByOrderStatus(OrderStatus orderStatus, Integer size, Integer page, String sort, Sort.Direction direction
+    ){
         Sort sortBy = Sort.by(direction, sort);
         Pageable pageable = PageRequest.of(page, size, sortBy);
         return repository.findOrdersByOrderStatus(orderStatus, pageable);

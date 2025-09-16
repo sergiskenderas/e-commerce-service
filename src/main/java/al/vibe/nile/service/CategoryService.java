@@ -27,6 +27,7 @@ public class CategoryService {
     public List<Category> getList(){
         return(repository.findAll());
     }
+
     public Category create(CreateCategoryDto createCategoryDto){
         Category category = modelMapper.map(createCategoryDto, Category.class);
         return repository.save(category);

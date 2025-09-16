@@ -11,26 +11,14 @@ import java.time.LocalDateTime;
 @Data
 public class PaymentDto {
     private Long id;
-
-    @JsonProperty("payment_date")
     private LocalDateTime paymentDate;
-
     private String amount;
-
-    @JsonProperty("payment_method")
     private PaymentMethod paymentMethod;
-
-    @JsonProperty("payment_status")
     private PaymentStatus paymentStatus;
-
-    @JsonProperty("transaction_id")
     private String transactionId;
-
-    @JsonProperty("created_at")
-    LocalDateTime createdAt;
-
-    @JsonProperty("updated_at")
+    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long costumerId;
 
 }
 
